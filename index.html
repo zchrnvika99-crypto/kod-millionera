@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Код миллионера · Взлом саквояжа</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #2c1e1a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 16px;
+            background-image: radial-gradient(circle at 10% 20%, #3f2e28 0%, #1f1512 90%);
+        }
+
+        /* Основное окно — стилизованный саквояж */
+        .suitcase {
+            background: #e8d9c0;
+            background-image: linear-gradient(145deg, #dac29c 0%, #c4aa82 100%);
+            width: 100%;
+            max-width: 380px;
+            border-radius: 28px 28px 24px 24px;
+            box-shadow: 
+                0 20px 30px -8px rgba(0,0,0,0.8),
+                inset 0 -2px 5px rgba(0,0,0,0.2),
+                inset 0 2px 5px rgba(255,245,215,0.6);
+            padding: 24px 20px 30px 20px;
+            border: 1px solid #b4946a;
+            position: relative;
+        }
+
+        /* Кожаные уголки */
+        .suitcase::before,
+        .suitcase::after {
+            content: "";
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border: 3px solid #6b4f3a;
+            pointer-events: none;
+        }
+        .suitcase::before {
+            top: 10px;
+            left: 10px;
+            border-right: none;
+            border-bottom: none;
+        }
+        .suitcase::after {
+            bottom: 10px;
+            right: 10px;
+            border-left: none;
+            border-top: none;
+        }
+
+        /* Экран с кодом */
+        .code-screen {
+            background: #2e4034;
+            border: 8px solid #735e4b;
+            border-radius: 16px;
+            padding: 8px 12px;
+            margin-bottom: 28px;
+            box-shadow: inset 0 0 15px #1f2a1f;
+        }
+
+        #codeDisplay {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #b5d99c;
+            font-family: 'Courier New', monospace;
+            font-size: 48px;
+            font-weight: bold;
+            letter-spacing: 8px;
+            text-align: center;
+            caret-color: #ffd966;
+            text-shadow: 0 0 5px #7abf7a;
+            padding: 5px 0;
+        }
+
+        #codeDisplay::placeholder {
+            color: #5b7a5b;
+            letter-spacing: 2px;
+            font-size: 24px;
+            text-shadow: none;
+        }
+
+        /* Клавиатура как на старом телефоне */
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 20px 0 16px;
+        }
+
+        .key {
+            background: #b4946a;
+            background: linear-gradient(145deg, #bb9b75, #9f7f59);
+            border: 3px solid #6b4f3a;
+            border-radius: 20px;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            color: #2a1e16;
+            box-shadow: 0 6px 0 #4f3b2b, 0 8px 8px rgba(0,0,0,0.4);
+            cursor: pointer;
+            transition: all 0.05s ease-in;
+            font-family: 'Courier New', monospace;
+            user-select: none;
+        }
+
+        .key:active {
+            transform: translateY(6px);
+            box-shadow: 0 1px 0 #4f3b2b, 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        /* Кнопка OK на месте решётки */
+        .key-ok {
+            background: #7a5a3a;
+            background: linear-gradient(145deg, #8f6f4b, #6b4f33);
+            border-color: #3f2e1f;
+            color: #efe6d2;
+            font-size: 28px;
+            font-weight: bold;
+            box-shadow: 0 6px 0 #3f2e1f, 0 8px 8px rgba(0,0,0,0.4);
+        }
+
+        /* Кнопка сброса */
+        .reset-key {
+            background: #8b6c54;
+            background: linear-gradient(145deg, #9f826a, #7a5d47);
+            border: 2px solid #5b4133;
+            border-radius: 40px;
+            padding: 10px 20px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #231b15;
+            box-shadow: 0 4px 0 #4f3b2b;
+            cursor: pointer;
+            text-align: center;
+            transition: 0.05s linear;
+            margin-top: 8px;
+            border: 2px solid #b4946a;
+        }
+
+        .reset-key:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #4f3b2b;
+        }
+
+        /* Область сообщений */
+        .message-area {
+            background: #735e4b;
+            border-radius: 30px;
+            padding: 12px 16px;
+            margin: 20px 0 8px;
+            border: 2px solid #3f2e1f;
+            color: #f0e2cc;
+            font-size: 18px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 8px #1f1510;
+        }
+
+        /* Декоративный ремешок */
+        .strap {
+            height: 20px;
+            width: 80%;
+            background: #4f3b2b;
+            margin: 10px auto 0;
+            border-radius: 40px;
+            border: 1px solid #2b1f17;
+        }
+
+        .small-note {
+            color: #3a2c22;
+            text-align: center;
+            margin-top: 16px;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        /* Страница победы (скрыта по умолчанию) */
+        .hidden {
+            display: none !important;
+        }
+
+        .victory-screen {
+            background: #dac29c;
+            border-radius: 24px;
+            padding: 28px 20px;
+            text-align: center;
+            border: 4px solid #a3815a;
+            box-shadow: inset 0 0 20px #b4946a;
+        }
+
+        .victory-screen h1 {
+            font-size: 32px;
+            color: #1f4d2b;
+            text-shadow: 2px 2px 0 #b3a582;
+            margin-bottom: 20px;
+        }
+
+        .victory-screen p {
+            font-size: 20px;
+            margin: 12px 0;
+            color: #2e1f16;
+        }
+
+        .victory-screen .money {
+            font-size: 48px;
+            font-weight: bold;
+            color: #b8860b;
+            text-shadow: 2px 2px 0 #4f3b2b;
+            margin: 15px 0;
+        }
+
+        .btn-claim {
+            background: #7a5a3a;
+            border: none;
+            border-radius: 40px;
+            padding: 16px 30px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #efe6d2;
+            border-bottom: 5px solid #3f2e1f;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            transition: 0.05s linear;
+        }
+
+        .btn-claim:active {
+            transform: translateY(5px);
+            border-bottom-width: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Основная страница: ввод кода -->
+    <div id="pageInput" class="suitcase">
+        <div class="code-screen">
+            <input type="text" id="codeDisplay" placeholder="____" readonly maxlength="4">
+        </div>
+
+        <!-- Клавиатура 3x4 (без * и #, вместо # — OK) -->
+        <div class="keypad" id="keypad">
+            <div class="key" data-digit="1">1</div>
+            <div class="key" data-digit="2">2</div>
+            <div class="key" data-digit="3">3</div>
+            <div class="key" data-digit="4">4</div>
+            <div class="key" data-digit="5">5</div>
+            <div class="key" data-digit="6">6</div>
+            <div class="key" data-digit="7">7</div>
+            <div class="key" data-digit="8">8</div>
+            <div class="key" data-digit="9">9</div>
+            <div></div> <!-- пустая ячейка для симметрии -->
+            <div class="key" data-digit="0">0</div>
+            <div class="key key-ok" id="okButton">OK</div>
+        </div>
+
+        <!-- Кнопка сброса -->
+        <div class="reset-key" id="resetButton">C</div>
+
+        <!-- Область сообщений -->
+        <div class="message-area" id="message">ВВЕДИТЕ КОД</div>
+
+        <div class="strap"></div>
+        <div class="small-note">САКВОЯЖ ДОКТОРА РОМАНА</div>
+    </div>
+
+    <!-- Страница победы (скрыта) -->
+    <div id="pageVictory" class="suitcase victory-screen hidden">
+        <h1>⚡ УСПЕХ ⚡</h1>
+        <p>Замок щёлкнул. Крышка саквояжа медленно поднимается...</p>
+        <div class="money">💰 10.000.000 ₽</div>
+        <p>Все деньги целы! Роман опускает голову и сдаётся.</p>
+        <p>Твои друзья и семья свободны. Дело раскрыто.</p>
+        <button class="btn-claim" id="celebrateBtn">ЗАБРАТЬ ДЕНЬГИ</button>
+        <div class="strap" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        (function() {
+            const pageInput = document.getElementById('pageInput');
+            const pageVictory = document.getElementById('pageVictory');
+            const display = document.getElementById('codeDisplay');
+            const messageEl = document.getElementById('message');
+            const keypad = document.getElementById('keypad');
+            const resetBtn = document.getElementById('resetButton');
+            const okBtn = document.getElementById('okButton');
+
+            const CORRECT_CODE = '8527'; // правильный код
+            let currentCode = '';
+
+            function updateDisplay() {
+                // Показываем введённые цифры, остальное подчёркиваниями
+                let shown = currentCode.padEnd(4, '_').split('').join(' ');
+                display.value = shown;
+            }
+
+            function setMessage(msg, isError = false) {
+                messageEl.textContent = msg;
+                messageEl.style.color = isError ? '#ffb3a
