@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Код миллионера · Взлом саквояжа</title>
     <style>
         * {
@@ -23,25 +23,19 @@
             background-image: radial-gradient(circle at 10% 20%, #3f2e28 0%, #1f1512 90%);
         }
 
-        /* Основное окно — стилизованный саквояж */
         .suitcase {
             background: #e8d9c0;
             background-image: linear-gradient(145deg, #dac29c 0%, #c4aa82 100%);
             width: 100%;
             max-width: 380px;
             border-radius: 28px 28px 24px 24px;
-            box-shadow: 
-                0 20px 30px -8px rgba(0,0,0,0.8),
-                inset 0 -2px 5px rgba(0,0,0,0.2),
-                inset 0 2px 5px rgba(255,245,215,0.6);
+            box-shadow: 0 20px 30px -8px rgba(0,0,0,0.8), inset 0 -2px 5px rgba(0,0,0,0.2), inset 0 2px 5px rgba(255,245,215,0.6);
             padding: 24px 20px 30px 20px;
             border: 1px solid #b4946a;
             position: relative;
         }
 
-        /* Кожаные уголки */
-        .suitcase::before,
-        .suitcase::after {
+        .suitcase::before, .suitcase::after {
             content: "";
             position: absolute;
             width: 50px;
@@ -62,7 +56,6 @@
             border-top: none;
         }
 
-        /* Экран с кодом */
         .code-screen {
             background: #2e4034;
             border: 8px solid #735e4b;
@@ -95,7 +88,6 @@
             text-shadow: none;
         }
 
-        /* Клавиатура как на старом телефоне */
         .keypad {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -120,6 +112,8 @@
             transition: all 0.05s ease-in;
             font-family: 'Courier New', monospace;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         .key:active {
@@ -127,7 +121,6 @@
             box-shadow: 0 1px 0 #4f3b2b, 0 4px 6px rgba(0,0,0,0.3);
         }
 
-        /* Кнопка OK на месте решётки */
         .key-ok {
             background: #7a5a3a;
             background: linear-gradient(145deg, #8f6f4b, #6b4f33);
@@ -138,7 +131,6 @@
             box-shadow: 0 6px 0 #3f2e1f, 0 8px 8px rgba(0,0,0,0.4);
         }
 
-        /* Кнопка сброса */
         .reset-key {
             background: #8b6c54;
             background: linear-gradient(145deg, #9f826a, #7a5d47);
@@ -154,6 +146,8 @@
             transition: 0.05s linear;
             margin-top: 8px;
             border: 2px solid #b4946a;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         .reset-key:active {
@@ -161,7 +155,6 @@
             box-shadow: 0 1px 0 #4f3b2b;
         }
 
-        /* Область сообщений */
         .message-area {
             background: #735e4b;
             border-radius: 30px;
@@ -180,7 +173,6 @@
             box-shadow: inset 0 0 8px #1f1510;
         }
 
-        /* Декоративный ремешок */
         .strap {
             height: 20px;
             width: 80%;
@@ -198,7 +190,6 @@
             letter-spacing: 1px;
         }
 
-        /* Страница победы (скрыта по умолчанию) */
         .hidden {
             display: none !important;
         }
@@ -246,6 +237,8 @@
             margin-top: 20px;
             width: 100%;
             transition: 0.05s linear;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         .btn-claim:active {
@@ -255,13 +248,11 @@
     </style>
 </head>
 <body>
-    <!-- Основная страница: ввод кода -->
     <div id="pageInput" class="suitcase">
         <div class="code-screen">
             <input type="text" id="codeDisplay" placeholder="____" readonly maxlength="4">
         </div>
 
-        <!-- Клавиатура 3x4 (без * и #, вместо # — OK) -->
         <div class="keypad" id="keypad">
             <div class="key" data-digit="1">1</div>
             <div class="key" data-digit="2">2</div>
@@ -272,22 +263,17 @@
             <div class="key" data-digit="7">7</div>
             <div class="key" data-digit="8">8</div>
             <div class="key" data-digit="9">9</div>
-            <div></div> <!-- пустая ячейка для симметрии -->
+            <div></div>
             <div class="key" data-digit="0">0</div>
             <div class="key key-ok" id="okButton">OK</div>
         </div>
 
-        <!-- Кнопка сброса -->
         <div class="reset-key" id="resetButton">C</div>
-
-        <!-- Область сообщений -->
         <div class="message-area" id="message">ВВЕДИТЕ КОД</div>
-
         <div class="strap"></div>
         <div class="small-note">САКВОЯЖ ДОКТОРА РОМАНА</div>
     </div>
 
-    <!-- Страница победы (скрыта) -->
     <div id="pageVictory" class="suitcase victory-screen hidden">
         <h1>⚡ УСПЕХ ⚡</h1>
         <p>Замок щёлкнул. Крышка саквояжа медленно поднимается...</p>
@@ -307,16 +293,96 @@
             const keypad = document.getElementById('keypad');
             const resetBtn = document.getElementById('resetButton');
             const okBtn = document.getElementById('okButton');
+            const celebrateBtn = document.getElementById('celebrateBtn');
 
-            const CORRECT_CODE = '8527'; // правильный код
+            const CORRECT_CODE = '8527';
             let currentCode = '';
 
             function updateDisplay() {
-                // Показываем введённые цифры, остальное подчёркиваниями
                 let shown = currentCode.padEnd(4, '_').split('').join(' ');
                 display.value = shown;
             }
 
             function setMessage(msg, isError = false) {
                 messageEl.textContent = msg;
-                messageEl.style.color = isError ? '#ffb3a
+                messageEl.style.color = isError ? '#ffb3a3' : '#f0e2cc';
+            }
+
+            function addDigit(d) {
+                if (currentCode.length < 4) {
+                    currentCode += d;
+                    updateDisplay();
+                    setMessage('ВВЕДИТЕ КОД');
+                } else {
+                    setMessage('⚠ УЖЕ 4 ЦИФРЫ', true);
+                }
+            }
+
+            function resetCode() {
+                currentCode = '';
+                updateDisplay();
+                setMessage('ВВЕДИТЕ КОД');
+            }
+
+            function checkCode() {
+                if (currentCode.length !== 4) {
+                    setMessage('❗ НУЖНО 4 ЦИФРЫ', true);
+                    return;
+                }
+
+                if (currentCode === CORRECT_CODE) {
+                    pageInput.classList.add('hidden');
+                    pageVictory.classList.remove('hidden');
+                } else {
+                    setMessage('❌ НЕВЕРНЫЙ КОД', true);
+                    setTimeout(() => {
+                        resetCode();
+                    }, 800);
+                }
+            }
+
+            // Обработчики для кнопок
+            keypad.addEventListener('click', (e) => {
+                const digit = e.target.getAttribute('data-digit');
+                if (digit !== null) {
+                    addDigit(digit);
+                }
+            });
+
+            okBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                checkCode();
+            });
+
+            resetBtn.addEventListener('click', (e) => {
+                resetCode();
+            });
+
+            if (celebrateBtn) {
+                celebrateBtn.addEventListener('click', () => {
+                    alert('Поздравляем! Вы вернули свои миллионы и спасли всех!');
+                    // Можно также вернуться к началу, если нужно:
+                    // pageVictory.classList.add('hidden');
+                    // pageInput.classList.remove('hidden');
+                    // resetCode();
+                });
+            }
+
+            // Поддержка физической клавиатуры (на случай подключения клавиатуры к телефону)
+            window.addEventListener('keydown', (e) => {
+                const key = e.key;
+                if (key >= '0' && key <= '9') {
+                    addDigit(key);
+                } else if (key === 'Enter') {
+                    checkCode();
+                } else if (key === 'Escape' || key === 'Delete' || key === 'Backspace') {
+                    resetCode();
+                }
+            });
+
+            updateDisplay();
+            setMessage('ВВЕДИТЕ КОД');
+        })();
+    </script>
+</body>
+</html>
